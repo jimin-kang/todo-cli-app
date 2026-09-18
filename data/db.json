@@ -1,0 +1,29 @@
+{
+    "items": {
+        "personal": {
+            "id": 3,
+            "name": "personal",
+            "description": "personal things",
+            "created_at": "2026-09-15T23:00:26.489195",
+            "items": [
+                {
+                    "id": 1,
+                    "name": "groceries",
+                    "description": "",
+                    "created_at": "2026-09-18T15:55:41.685017",
+                    "due_date": "2026-09-18T00:00:00",
+                    "status": "todo"
+                },
+                {
+                    "id": 2,
+                    "name": "run",
+                    "description": "long run",
+                    "created_at": "2026-09-18T17:02:24.445344",
+                    "due_date": "2026-09-18T00:00:00",
+                    "status": "todo"
+                }
+            ],
+            "item_count": 2
+        }
+    }
+}

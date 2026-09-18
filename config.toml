@@ -1,0 +1,5 @@
+# Choose how ToDo lists & items should be stored:
+# 'memory' = in-memory storage (data will not persist between runs)
+# 'json' = json file storage
+# 'db' = database storage (sqlite) 
+storage_type = 'db' 
