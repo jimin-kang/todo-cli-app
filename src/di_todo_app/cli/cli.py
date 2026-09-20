@@ -29,7 +29,7 @@ WILDCARD = "*"
 class DatePrompt(PromptBase[datetime]):
     """
     A prompt for a datetime.
-    Used to ask for a ToDo item's due date .
+    Used to ask for a ToDo item's due date.
 
     Args:
         PromptBase (_type_): _description_
@@ -51,14 +51,7 @@ class DatePrompt(PromptBase[datetime]):
 
 class TodoShell(cmd2.Cmd):
     """
-    USAGE:
-    - list show <list name> <*>
-    - list create <name>
-    - list drop <name>
-    - todo add <list name>
-    - todo get <list name> <item ID>
-    - todo update <list name> <item ID>
-    - todo delete <list name> <item ID>
+    Shell to define all CLI commands.
     """
     def __init__(self, todo_service: TodoService, *args, **kwargs):
         """

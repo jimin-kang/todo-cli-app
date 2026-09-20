@@ -1,20 +1,15 @@
 import json
 from typing import List
 
-from di_todo_app.exception.exception import ItemNotFound, ListNotFound
+from di_todo_app.exception.exception import DuplicateListFound, ItemNotFound, ListNotFound
 from di_todo_app.models.core import ToDo, ToDoList
 from di_todo_app.protocol.core import TodoRepository
 
 
 class TodoService:
     """
-    TodoService defines what we can do with ToDo lists (ToDoList) and items (ToDo).
-    Our CLI application will basically just call our TodoService.
-    
-    Additionally, this class should be repsonsible for:
-    - logging
-    - notifying the user about results/invalid commands
-    - return data in CLI-ready format
+    TodoService translates user input into application logic.\n
+    User commands will trigger calls to the appropriate repository method.
     """
     def __init__(self, repo: TodoRepository):
         self.repo = repo
@@ -22,9 +17,6 @@ class TodoService:
     def create_list(self, todo_list: ToDoList) -> ToDoList:
         """
         Create the new ToDoList.
-
-        Args:
-            todo_list (ToDoList): _description_
         """
         return self.repo.create_list(todo_list=todo_list)
     
@@ -38,6 +30,9 @@ class TodoService:
         return self.repo.drop_list(list_name)
 
     def drop_all_lists(self) -> None:
+        """
+        Delete all ToDoLists from the repo.
+        """
         return self.repo.drop_all_lists()
     
     def get_list(self, list_name: str) -> ToDoList | None:
@@ -55,10 +50,6 @@ class TodoService:
     def update_list(self, list_name: str, updated_list: ToDoList) -> ToDoList:
         """
         Update the specified ToDoList.
-
-        Args:
-            list_name (str): _description_
-            updated_list (ToDoList): _description_
         """
         return self.repo.update_list(list_name=list_name, updated_list=updated_list)
         
@@ -72,12 +63,6 @@ class TodoService:
     def view_list(self, list_name: str) -> List[ToDo]:
         """
         Return all the items of the ToDoList.
-
-        Args:
-            list_name (str): _description_
-
-        Returns:
-            List[ToDo]: _description_
         """
         return self.repo.view_list(list_name=list_name)
         

@@ -1,6 +1,3 @@
-"""
-TODO: Load conig from .env
-"""
 import tomllib
 from typing import Literal
 
