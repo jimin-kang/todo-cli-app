@@ -1,12 +1,17 @@
-from sqlalchemy import create_engine
+from pathlib import Path
+
+from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-DATABASE_URL = "sqlite:///data/todos.db" # assumes project is from root (i.e. uv run python -m di_todo_app.main)
+def get_db_url(db_path: Path) -> str:
+    return f"sqlite:///{db_path}"
 
-engine = create_engine(DATABASE_URL)
+def get_engine(db_url: str) -> Engine:
+    return create_engine(db_url)
 
-SessionLocal = sessionmaker(
-    bind=engine,
-    autoflush=False,
-    autocommit=False,
-)
+def get_session_maker(engine: Engine) -> sessionmaker[Session]:
+    return sessionmaker(
+        bind=engine,
+        autoflush=False,
+        autocommit=False,
+    )

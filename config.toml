@@ -2,4 +2,8 @@
 # 'memory' = in-memory storage (data will not persist between runs)
 # 'json' = json file storage
 # 'db' = database storage (sqlite) 
-storage_type = 'db' 
+storage_type = 'json' 
+
+# File paths to the JSON and SQLite databases (relative to the repository root).
+json_path = 'data/todos.json'
+db_path = 'data/todos.db'

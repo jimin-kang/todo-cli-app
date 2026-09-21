@@ -9,9 +9,9 @@ from di_todo_app.models.database import ToDoDB, ToDoListDB
 from di_todo_app.models.utils import convert_todo_to_db
 from di_todo_app.protocol.utils import find_item_in_list
 
-class SQLiteTodoRepository:
+class DatabaseTodoRepository:
     """
-    TodoRepository implementation for SQLite storage. 
+    TodoRepository implementation for Database storage. 
     """
     
     def __init__(self, session: Session):

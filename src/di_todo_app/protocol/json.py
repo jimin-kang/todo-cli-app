@@ -7,20 +7,17 @@ from di_todo_app.exception.exception import DuplicateListFound, ItemNotFound, Li
 from di_todo_app.models.core import ToDo, ToDoList, ToDoListDatabase
 from di_todo_app.protocol.utils import custom_json_serializer, find_item_in_list
 
-# Path to data
-ROOT_DIR = Path(__file__).resolve().parent.parent.parent.parent
-DATA_DIR = ROOT_DIR / "data" 
 
-class FileSystemTodoRepository:
+class JsonTodoRepository:
     """
     TodoRepository implementation for JSON file storage.
     """
     
-    def __init__(self):
+    def __init__(self, json_path: Path):
         """
         Initialize the JSON database.
         """
-        self.JSON_DB: Path = Path(DATA_DIR) / "db.json"
+        self.JSON_DB: Path = json_path # Path(DATA_DIR) / "db.json"
         
         # Create the file if it doesn't exist
         if not os.path.exists(self.JSON_DB):
