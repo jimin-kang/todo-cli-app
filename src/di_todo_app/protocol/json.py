@@ -18,7 +18,7 @@ class JsonTodoRepository:
         """
         Initialize the JSON database.
         """
-        self.JSON_DB: Path = json_path # Path(DATA_DIR) / "db.json"
+        self.JSON_DB: Path = json_path 
         
         # Create the file if it doesn't exist
         if not os.path.exists(self.JSON_DB):
