@@ -4,7 +4,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from di_todo_app.exception.exception import DuplicateListFound, ItemNotFound, ListNotFound
-from di_todo_app.models.core import ToDo, ToDoList
+from di_todo_app.models.core import ToDo, ToDoList, UpdateToDoListRequest, UpdateToDoRequest
 from di_todo_app.models.database import ToDoDB, ToDoListDB
 from di_todo_app.models.utils import convert_todo_to_db
 from di_todo_app.protocol.utils import find_item_in_list
@@ -48,6 +48,7 @@ class DatabaseTodoRepository:
         self.verify_new_list(list_name=todo_list.name)
         
         todo_list_row = ToDoListDB(
+            id=todo_list.id,
             name=todo_list.name,
             description=todo_list.description,
             created_at=todo_list.created_at
@@ -93,7 +94,7 @@ class DatabaseTodoRepository:
         self.session.commit()
 
 
-    def update_list(self, list_name: str, updated_list: ToDoList) -> ToDoList:
+    def update_list(self, list_name: str, updated_list_req: UpdateToDoListRequest) -> ToDoList:
         self.verify_list_exists(list_name=list_name)
                 
         query = (
@@ -102,12 +103,12 @@ class DatabaseTodoRepository:
         todo_list_row = self.session.scalars(query).first()
         
         if todo_list_row:
-            todo_list_row.name = updated_list.name
-            todo_list_row.description = updated_list.description
+            todo_list_row.name = updated_list_req.name
+            todo_list_row.description = updated_list_req.description
             
             self.session.commit()
-            
-            return updated_list
+                        
+            return ToDoList.model_validate(todo_list_row)
         else:
             # This shouldn't happen since we verify the list exists before executing the query.
             # Adding this to satisfy the return signature.
@@ -155,19 +156,19 @@ class DatabaseTodoRepository:
         return [ToDo.model_validate(todo) for todo in todo_rows]
             
         
-    def update_item(self, id: int, new_todo: ToDo, list_name: str) -> ToDo:
+    def update_item(self, id: int, update_todo_req: UpdateToDoRequest, list_name: str) -> ToDo:
         todo_list = self.verify_list_exists(list_name=list_name)
         item, index = self.verify_item_exists(todo_list=todo_list, item_id=id)
         
         todo_to_update = self.session.query(ToDoDB).filter(ToDoDB.id==id).first()
         if todo_to_update:
-            todo_to_update.name = new_todo.name
-            todo_to_update.description = new_todo.description
-            todo_to_update.due_date = new_todo.due_date
-            todo_to_update.status = new_todo.status
+            todo_to_update.name = update_todo_req.name
+            todo_to_update.description = update_todo_req.description
+            todo_to_update.due_date = update_todo_req.due_date
+            todo_to_update.status = update_todo_req.status
             
             self.session.commit()
-            return new_todo
+            return ToDo.model_validate(todo_to_update)
         else:
             raise ItemNotFound(f"ToDo item '{id}' not found, cannot update.")
         

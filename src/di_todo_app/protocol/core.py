@@ -1,6 +1,6 @@
 from typing import List, Protocol
 
-from di_todo_app.models.core import ToDo, ToDoList
+from di_todo_app.models.core import ToDo, ToDoList, UpdateToDoListRequest, UpdateToDoRequest
 
 class TodoRepository(Protocol):
     """
@@ -34,7 +34,7 @@ class TodoRepository(Protocol):
         """
         ...
     
-    def update_list(self, list_name: str, updated_list: ToDoList) -> ToDoList:
+    def update_list(self, list_name: str, updated_list_req: UpdateToDoListRequest) -> ToDoList:
         """
         Update the specified ToDoList.
         
@@ -74,7 +74,7 @@ class TodoRepository(Protocol):
         """
         ...
         
-    def update_item(self, id: int, new_todo: ToDo, list_name: str) -> ToDo:
+    def update_item(self, id: int, update_todo_req: UpdateToDoRequest, list_name: str) -> ToDo:
         """
         Update the ToDo item in the specified ToDoList.
         

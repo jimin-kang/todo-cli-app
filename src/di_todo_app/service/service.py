@@ -2,7 +2,7 @@ import json
 from typing import List
 
 from di_todo_app.exception.exception import DuplicateListFound, ItemNotFound, ListNotFound
-from di_todo_app.models.core import ToDo, ToDoList
+from di_todo_app.models.core import ToDo, ToDoList, UpdateToDoListRequest, UpdateToDoRequest
 from di_todo_app.protocol.core import TodoRepository
 
 
@@ -47,11 +47,11 @@ class TodoService:
         """
         return self.repo.get_list(list_name=list_name)
     
-    def update_list(self, list_name: str, updated_list: ToDoList) -> ToDoList:
+    def update_list(self, list_name: str, updated_list_req: UpdateToDoListRequest) -> ToDoList:
         """
         Update the specified ToDoList.
         """
-        return self.repo.update_list(list_name=list_name, updated_list=updated_list)
+        return self.repo.update_list(list_name=list_name, updated_list_req=updated_list_req)
         
     def view_all_lists(self) -> List[ToDoList]:
         """
@@ -91,7 +91,7 @@ class TodoService:
         return self.repo.get_item(id=id, list_name=list_name)
                     
         
-    def update_item(self, id: int, todo: ToDo, list_name: str) -> ToDo:
+    def update_item(self, id: int, update_todo_req: UpdateToDoRequest, list_name: str) -> ToDo:
         """
         Update the specified ToDo item in the ToDoList.
 
@@ -100,7 +100,7 @@ class TodoService:
             todo (ToDo): _description_
             list_name (str): _description_
         """
-        return self.repo.update_item(id=id, new_todo=todo, list_name=list_name)
+        return self.repo.update_item(id=id, update_todo_req=update_todo_req, list_name=list_name)
                     
         
     def delete_item(self, id: int, list_name: str) -> None:

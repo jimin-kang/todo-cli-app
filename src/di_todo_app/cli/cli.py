@@ -10,7 +10,7 @@ from rich.panel import Panel
 from rich.style import Style
 
 from di_todo_app.exception.exception import ItemNotFound, ListNotFound
-from di_todo_app.models.core import ToDo, ToDoList, ToDoStatus
+from di_todo_app.models.core import ToDo, ToDoList, ToDoStatus, UpdateToDoListRequest, UpdateToDoRequest
 from di_todo_app.service.service import TodoService
 
 
@@ -202,7 +202,7 @@ class TodoShell(cmd2.Cmd):
                         if update_list:
                             self.todo_service.update_list(
                                 list_name=args.name,
-                                updated_list=updated_todo_list,
+                                updated_list_req=UpdateToDoListRequest(name=name, description=description),
                             )
                             print(f"Successfully updated ToDoList '{args.name}'.")
                         else:
@@ -431,7 +431,7 @@ class TodoShell(cmd2.Cmd):
                         if update_item:
                             self.todo_service.update_item(
                                 id=args.item_id,
-                                todo=updated_item,
+                                update_todo_req=UpdateToDoRequest(name=name, description=description, due_date=due_date, status=ToDoStatus(status)),
                                 list_name=args.list_name
                             )
                             print(f"Successfully updated item '{args.item_id}' from list '{args.list_name}'.")

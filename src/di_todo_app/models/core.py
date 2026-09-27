@@ -1,3 +1,4 @@
+from collections import Counter
 from datetime import datetime
 from enum import Enum
 import json
@@ -44,6 +45,21 @@ class ToDo(BaseModel):
         """
         cls._counter = counter_val
     
+    def __eq__(self, other):
+        """
+        Implementation to define whether two ToDo items are equal.
+        """
+        # Equal if they're the same object in memory
+        if self is other:
+            return True
+            
+        # Ensure the two objects are both ToDo items
+        if not isinstance(other, ToDo):
+            return NotImplemented
+            
+        # Equal if all their fields match in value
+        return self.id == other.id and self.name == other.name and self.description == other.description and self.created_at == other.created_at and self.due_date == other.due_date and self.status == other.status
+    
 
 class ToDoList(BaseModel):
     """
@@ -51,7 +67,7 @@ class ToDoList(BaseModel):
     """
     _counter: ClassVar[int] = 0 # NOTE: this must be set appropriately upon app startup if data is persisted to file/DB to avoid duplicate IDs
 
-    id: int = Field(default_factory=lambda: ToDoList.get_next_id()) # TODO: DELETE THIS, LOAD ID FROM DATABASE (DOESN'T PERSIST BETWEEN RUNS)
+    id: int = Field(default_factory=lambda: ToDoList.get_next_id()) 
     name: str
     description: Optional[str] = None
     created_at: datetime = Field(default_factory=datetime.now)
@@ -72,6 +88,13 @@ class ToDoList(BaseModel):
         Call this to set the counter upon app startup to the next available ID that has yet to be persisted.
         """
         cls._counter = counter_val
+        
+    @classmethod
+    def get_counter(cls) -> int:
+        """
+        Get the class counter value.
+        """
+        return cls._counter
     
     @computed_field
     @property
@@ -90,8 +113,40 @@ class ToDoList(BaseModel):
 
         return data
     
+    def __eq__(self, other):
+        """
+        Implementation to define whether two ToDoLists are equal.
+        """
+        # Equal if they're the same object in memory
+        if self is other:
+            return True
+            
+        # Ensure the two objects are both ToDoLists
+        if not isinstance(other, ToDoList):
+            return NotImplemented
+            
+        # Equal if all their fields match in value
+        return self.id == other.id and self.name == other.name and self.description == other.description and self.created_at == other.created_at and Counter(self.items) == Counter(other.items)
+    
 
 class ToDoListDatabase(BaseModel):
     items: dict[str, ToDoList] = {} # map {list name : ToDoList}
     model_config = ConfigDict(from_attributes=True)
 
+
+"""
+Classes for updating ToDo and ToDoLists.
+These define which fields can be updated for each.
+"""
+class UpdateToDoRequest(BaseModel):
+    name: str
+    description: Optional[str] = None
+    due_date: Optional[datetime] = None
+    status: ToDoStatus = ToDoStatus.TODO
+
+class UpdateToDoListRequest(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+
+        

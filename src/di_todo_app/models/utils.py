@@ -19,10 +19,11 @@ def convert_todo_to_db(todo: ToDo, list_name: str) -> ToDoDB:
 
 def convert_todo_list_to_db(todo_list: ToDoList) -> ToDoListDB:
     """
-    Translate the ToDo application model to the ToDoDB database model.
+    Translate the ToDoList application model to the ToDoListDB database model.
     """
     return ToDoListDB(
+        id=todo_list.id,
         name=todo_list.name,
         description=todo_list.description,
-        created_at=todo_list.created_at,
+        created_at=todo_list.created_at
      )

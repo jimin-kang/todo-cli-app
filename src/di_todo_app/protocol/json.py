@@ -1,10 +1,11 @@
+import copy
 import json
 import os
 from pathlib import Path
 from typing import List
 
 from di_todo_app.exception.exception import DuplicateListFound, ItemNotFound, ListNotFound
-from di_todo_app.models.core import ToDo, ToDoList, ToDoListDatabase
+from di_todo_app.models.core import ToDo, ToDoList, ToDoListDatabase, UpdateToDoListRequest, UpdateToDoRequest
 from di_todo_app.protocol.utils import custom_json_serializer, find_item_in_list
 
 
@@ -89,18 +90,21 @@ class JsonTodoRepository:
     def drop_all_lists(self) -> None:
         self._write_db(db=ToDoListDatabase())
     
-    def update_list(self, list_name: str, updated_list: ToDoList) -> ToDoList:
+    def update_list(self, list_name: str, updated_list_req: UpdateToDoListRequest) -> ToDoList:
         self.verify_list_exists(list_name=list_name)
         
         db = self._load_db()
         
-        # pop the original ToDoList if the list name has changed,
-        # then add the updated list content
-        if list_name != updated_list.name:
-            db.items.pop(list_name) 
-        db.items |= {updated_list.name: updated_list}
+        # pop the original ToDoList 
+        curr_list = db.items.pop(list_name) 
         
+        # create the updated ToDoList, add to DB
+        updated_list = copy.deepcopy(curr_list)
+        updated_list.name = updated_list_req.name
+        updated_list.description = updated_list_req.description
+        db.items |= {updated_list.name: updated_list}
         self._write_db(db)
+        
         return updated_list
                 
         
@@ -129,19 +133,24 @@ class JsonTodoRepository:
         return todo_list.items
         
         
-    def update_item(self, id: int, new_todo: ToDo, list_name: str) -> ToDo:
+    def update_item(self, id: int, update_todo_req: UpdateToDoRequest, list_name: str) -> ToDo:
         todo_list = self.verify_list_exists(list_name=list_name)
-        _, index = self.verify_item_exists(todo_list=todo_list, item_id=id)
+        curr_item, index = self.verify_item_exists(todo_list=todo_list, item_id=id)
         
         # update the ToDoList with the updated item
-        todo_list.items[index] = new_todo
+        updated_item = copy.deepcopy(curr_item)
+        updated_item.name = update_todo_req.name
+        updated_item.description = update_todo_req.description
+        updated_item.due_date = update_todo_req.due_date
+        updated_item.status = update_todo_req.status
+        todo_list.items[index] = updated_item
         
         # write it to the database
         db = self._load_db()
         db.items |= {todo_list.name: todo_list}
         self._write_db(db)
         
-        return new_todo
+        return updated_item
         
     
     def delete_item(self, id: int, list_name: str) -> None:

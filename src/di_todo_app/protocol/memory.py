@@ -1,7 +1,8 @@
+import copy
 from typing import List
 
 from di_todo_app.exception.exception import DuplicateListFound, ItemNotFound, ListNotFound
-from di_todo_app.models.core import ToDo, ToDoList, ToDoListDatabase
+from di_todo_app.models.core import ToDo, ToDoList, ToDoListDatabase, UpdateToDoListRequest, UpdateToDoRequest
 from di_todo_app.protocol.utils import find_item_in_list
 
 
@@ -30,12 +31,16 @@ class InMemoryTodoRepository:
         self.TODO_DB = ToDoListDatabase()
     
     
-    def update_list(self, list_name: str, updated_list: ToDoList) -> ToDoList:
+    def update_list(self, list_name: str, updated_list_req: UpdateToDoListRequest) -> ToDoList:
         _ = self.verify_list_exists(list_name=list_name)
         
-        # delete the data keyed at the original list name if the list name has changed
-        if list_name != updated_list.name:
-            self.TODO_DB.items.pop(list_name)
+        # delete original list
+        current_list = self.TODO_DB.items.pop(list_name)
+        
+        # create the updated list & add it
+        updated_list = copy.deepcopy(current_list)
+        updated_list.name = updated_list_req.name
+        updated_list.description = updated_list_req.description
         self.TODO_DB.items |= {updated_list.name: updated_list}
         
         return updated_list
@@ -66,11 +71,19 @@ class InMemoryTodoRepository:
         return todo_list.items
     
     
-    def update_item(self, id: int, new_todo: ToDo, list_name: str) -> ToDo:
+    def update_item(self, id: int, update_todo_req: UpdateToDoRequest, list_name: str) -> ToDo:
         todo_list = self.verify_list_exists(list_name=list_name)
-        _, index = self.verify_item_exists(todo_list=todo_list, item_id=id)
-        todo_list.items[index] = new_todo
-        return new_todo         
+        curr_item, index = self.verify_item_exists(todo_list=todo_list, item_id=id)
+        
+        # create the updated item from the request, add it to the ToDoList
+        updated_item = copy.deepcopy(curr_item)
+        updated_item.name = update_todo_req.name
+        updated_item.description = update_todo_req.description
+        updated_item.due_date = update_todo_req.due_date
+        updated_item.status = update_todo_req.status
+        todo_list.items[index] = updated_item
+        
+        return updated_item         
            
     
     def delete_item(self, id: int, list_name: str) -> None:
